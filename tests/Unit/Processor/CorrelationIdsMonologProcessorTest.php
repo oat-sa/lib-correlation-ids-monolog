@@ -84,7 +84,6 @@ class CorrelationIdsMonologProcessorTest extends TestCase
                     CorrelationIdsHeaderNamesProviderInterface::DEFAULT_PARENT_CORRELATION_ID_HEADER_NAME => 'parent',
                     CorrelationIdsHeaderNamesProviderInterface::DEFAULT_ROOT_CORRELATION_ID_HEADER_NAME => 'root',
                 ]
-
             ],
             $record
         );
@@ -104,7 +103,6 @@ class CorrelationIdsMonologProcessorTest extends TestCase
                     CorrelationIdsHeaderNamesProviderInterface::DEFAULT_PARENT_CORRELATION_ID_HEADER_NAME => 'parent',
                     CorrelationIdsHeaderNamesProviderInterface::DEFAULT_ROOT_CORRELATION_ID_HEADER_NAME => 'root',
                 ]
-
             ],
             $record
         );
