@@ -18,6 +18,7 @@
  */
 namespace OAT\Library\CorrelationIdsMonolog\Tests\Unit\Processor;
 
+use Monolog\Processor\ProcessorInterface;
 use OAT\Library\CorrelationIds\Provider\CorrelationIdsHeaderNamesProviderInterface;
 use OAT\Library\CorrelationIds\Registry\CorrelationIdsRegistryInterface;
 use OAT\Library\CorrelationIdsMonolog\Processor\CorrelationIdsMonologProcessor;
@@ -40,6 +41,55 @@ class CorrelationIdsMonologProcessorTest extends TestCase
         $this->registryMock = $this->createMock(CorrelationIdsRegistryInterface::class);
         $this->providerMock = $this->createMock(CorrelationIdsHeaderNamesProviderInterface::class);
 
+        $this->subject = new CorrelationIdsMonologProcessor($this->registryMock, $this->providerMock);
+    }
+
+    public function testItImplementsTheMonologProcessorInterface(): void
+    {
+        $this->assertInstanceOf(ProcessorInterface::class, $this->subject);
+    }
+
+    public function testItCanAddCorrelationIdsLogEntriesToAnEmptyContext(): void
+    {
+        $this->configureMocksBehavior();
+
+        $record = $this->subject->__invoke([]);
+
+        $this->assertSame(
+            [
+                'extra' => [
+                    CorrelationIdsHeaderNamesProviderInterface::DEFAULT_CURRENT_CORRELATION_ID_HEADER_NAME => 'current',
+                    CorrelationIdsHeaderNamesProviderInterface::DEFAULT_PARENT_CORRELATION_ID_HEADER_NAME => 'parent',
+                    CorrelationIdsHeaderNamesProviderInterface::DEFAULT_ROOT_CORRELATION_ID_HEADER_NAME => 'root',
+                ]
+            ],
+            $record
+        );
+    }
+
+    public function testItCanMergeCorrelationIdsLogEntriesToAnExistingContext(): void
+    {
+        $this->configureMocksBehavior();
+
+        $record = $this->subject->__invoke([
+            'extra' => ['some' => 'data']
+        ]);
+
+        $this->assertSame(
+            [
+                'extra' => [
+                    'some' => 'data',
+                    CorrelationIdsHeaderNamesProviderInterface::DEFAULT_CURRENT_CORRELATION_ID_HEADER_NAME => 'current',
+                    CorrelationIdsHeaderNamesProviderInterface::DEFAULT_PARENT_CORRELATION_ID_HEADER_NAME => 'parent',
+                    CorrelationIdsHeaderNamesProviderInterface::DEFAULT_ROOT_CORRELATION_ID_HEADER_NAME => 'root',
+                ]
+            ],
+            $record
+        );
+    }
+
+    private function configureMocksBehavior(): void
+    {
         $this->registryMock
             ->expects($this->once())
             ->method('getCurrentCorrelationId')
@@ -69,42 +119,5 @@ class CorrelationIdsMonologProcessorTest extends TestCase
             ->expects($this->once())
             ->method('provideRootCorrelationIdHeaderName')
             ->willReturn(CorrelationIdsHeaderNamesProviderInterface::DEFAULT_ROOT_CORRELATION_ID_HEADER_NAME);
-
-        $this->subject = new CorrelationIdsMonologProcessor($this->registryMock, $this->providerMock);
-    }
-
-    public function testItCanAddCorrelationIdsLogEntriesToAnEmptyContext(): void
-    {
-        $record = $this->subject->__invoke([]);
-
-        $this->assertSame(
-            [
-                'extra' => [
-                    CorrelationIdsHeaderNamesProviderInterface::DEFAULT_CURRENT_CORRELATION_ID_HEADER_NAME => 'current',
-                    CorrelationIdsHeaderNamesProviderInterface::DEFAULT_PARENT_CORRELATION_ID_HEADER_NAME => 'parent',
-                    CorrelationIdsHeaderNamesProviderInterface::DEFAULT_ROOT_CORRELATION_ID_HEADER_NAME => 'root',
-                ]
-            ],
-            $record
-        );
-    }
-
-    public function testItCanMergeCorrelationIdsLogEntriesToAnExistingContext(): void
-    {
-        $record = $this->subject->__invoke([
-            'extra' => ['some' => 'data']
-        ]);
-
-        $this->assertSame(
-            [
-                'extra' => [
-                    'some' => 'data',
-                    CorrelationIdsHeaderNamesProviderInterface::DEFAULT_CURRENT_CORRELATION_ID_HEADER_NAME => 'current',
-                    CorrelationIdsHeaderNamesProviderInterface::DEFAULT_PARENT_CORRELATION_ID_HEADER_NAME => 'parent',
-                    CorrelationIdsHeaderNamesProviderInterface::DEFAULT_ROOT_CORRELATION_ID_HEADER_NAME => 'root',
-                ]
-            ],
-            $record
-        );
     }
 }
