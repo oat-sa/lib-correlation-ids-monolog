@@ -18,11 +18,12 @@
  */
 namespace OAT\Library\CorrelationIdsMonolog\Processor;
 
+use Monolog\Processor\ProcessorInterface;
 use OAT\Library\CorrelationIds\Provider\CorrelationIdsHeaderNamesProvider;
 use OAT\Library\CorrelationIds\Provider\CorrelationIdsHeaderNamesProviderInterface;
 use OAT\Library\CorrelationIds\Registry\CorrelationIdsRegistryInterface;
 
-class CorrelationIdsMonologProcessor
+class CorrelationIdsMonologProcessor implements ProcessorInterface
 {
     /** @var CorrelationIdsRegistryInterface */
     private $registry;
