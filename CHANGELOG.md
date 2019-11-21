@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.2.1
+-----
+
+* Added .Jenkinsfile
 
 0.2.0
 -----
