@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+0.2.2
+-----
+
+* Adjusted composer dependencies to support ^2.0
+
 0.2.1
 -----
 
